@@ -11,7 +11,7 @@ export default function HolderDashboard() {
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Initialize hidden tokens tracking from local browser memory array
+  // Load manually dismissed token IDs from local browser storage
   const [hiddenTokens, setHiddenTokens] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("hidden_credentials");
@@ -75,27 +75,26 @@ export default function HolderDashboard() {
     setLoading(false);
   };
 
-  // Add token string identifier to hidden browser tracker matrix array
-  const handleHideCredential = (tokenId) => {
+  // Push targeted token ID into exclusion list array
+  const handleDismissCredential = (tokenId) => {
     const updatedHidden = [...hiddenTokens, tokenId];
     setHiddenTokens(updatedHidden);
     localStorage.setItem("hidden_credentials", JSON.stringify(updatedHidden));
   };
 
-  // Completely clear hidden filters and restore all certificates to layout frame
-  const handleResetFilters = () => {
+  // Wipe the exclusion list array to restore everything instantly
+  const handleResetArchive = () => {
     setHiddenTokens([]);
     localStorage.removeItem("hidden_credentials");
   };
 
-  // Compute remaining items visible in grid loop framework
+  // Calculate filtered output loop list
   const visibleCredentials = credentials.filter(cred => !hiddenTokens.includes(cred.id));
 
   // State 1: Wallet Disconnected State (Glassmorphism Intercept Interface)
   if (!account) {
     return (
       <div className="w-full max-w-xl mx-auto bg-gray-950/40 border border-white/5 p-12 rounded-3xl backdrop-blur-md text-center shadow-[0_0_50px_rgba(168,85,247,0.1)] relative group">
-        {/* Decorative Internal Border Pulsing Ring */}
         <div className="absolute inset-0 rounded-3xl border border-purple-500/0 group-hover:border-purple-500/20 transition duration-700 pointer-events-none" />
         
         <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/30 flex items-center justify-center text-4xl mb-6 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
@@ -119,7 +118,7 @@ export default function HolderDashboard() {
     );
   }
 
-  // State 2: Main Dashboard View (Inherits theme from background wrapper canvas)
+  // State 2: Main Dashboard View
   return (
     <div className="w-full space-y-10">
       
@@ -134,23 +133,23 @@ export default function HolderDashboard() {
           </p>
         </div>
         
-        {/* Secondary Clean Functional Node Deck */}
+        {/* Secondary Clean Functional Controls */}
         <div className="flex items-center space-x-3">
           {hiddenTokens.length > 0 && (
             <button 
-              onClick={handleResetFilters}
-              className="text-[10px] font-mono tracking-wider border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500 hover:text-black px-3 py-2 rounded-xl backdrop-blur-sm transition-all"
+              onClick={handleResetArchive}
+              className="text-[10px] font-mono tracking-widest uppercase border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500 hover:text-black px-3 py-2 rounded-xl backdrop-blur-sm transition-all"
             >
-              RESTORE HIDDEN ({hiddenTokens.length})
+              Restore Dismissed ({hiddenTokens.length})
             </button>
           )}
           <div className="text-xs font-mono text-gray-500 border border-white/5 bg-gray-950/20 px-4 py-2 rounded-xl backdrop-blur-sm">
-            Active Assets: <span className="text-white font-bold">{visibleCredentials.length}</span>
+            Visible Assets: <span className="text-white font-bold">{visibleCredentials.length}</span>
           </div>
         </div>
       </div>
 
-      {/* Logic Zone: Loading State Spinner (Morph Design Template) */}
+      {/* Logic Zone: Loading State Spinner */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 space-y-4">
           <div className="relative w-12 h-12">
@@ -169,34 +168,25 @@ export default function HolderDashboard() {
           <p className="text-sm text-gray-500 max-w-sm mx-auto font-sans leading-relaxed">
             This verified wallet identifier currently contains zero active or unfiltered academic record assertions stamped onto the Sepolia infrastructure.
           </p>
-          {hiddenTokens.length > 0 && (
-            <button
-              onClick={handleResetFilters}
-              className="mt-6 font-mono text-xs text-cyan-400 underline decoration-cyan-500/40 hover:text-cyan-300"
-            >
-              Reveal hidden local archive configurations
-            </button>
-          )}
         </div>
       ) : (
         
         // Active Assets Portfolio Grid Layout Frame
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {visibleCredentials.map((cred) => (
-            <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group relative">
+            <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 relative group">
               
-              {/* Asset Card Core Interface Module */}
+              {/* High-Tech X Close Dismiss Button Hook overlay */}
+              <button
+                onClick={() => handleDismissCredential(cred.id)}
+                className="absolute top-4 right-4 z-20 w-6 h-6 rounded-full bg-gray-900/80 border border-white/10 flex items-center justify-center text-[10px] font-mono text-gray-400 hover:text-red-400 hover:border-red-500/40 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md backdrop-blur-sm"
+                title="Dismiss Card from View"
+              >
+                ✕
+              </button>
+
+              {/* Asset Card Core Interface Module (Keeps internal Revoked status flags perfectly untouched) */}
               <CredentialCard credential={cred} />
-              
-              {/* Sleek Mask UI Action Trigger */}
-              <div className="mt-2 text-right opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                  onClick={() => handleHideCredential(cred.id)}
-                  className="text-[10px] font-mono font-bold tracking-widest text-gray-600 hover:text-red-400 transition"
-                >
-                  [ HIDE FROM VAULT ]
-                </button>
-              </div>
 
             </div>
           ))}
