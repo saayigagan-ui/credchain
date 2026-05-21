@@ -82,13 +82,13 @@ export default function HolderDashboard() {
     localStorage.setItem("hidden_credentials", JSON.stringify(updatedHidden));
   };
 
-  // Wipe the exclusion list array to restore everything instantly
+  // Wipe the exclusion list array to restore hidden assets instantly
   const handleResetArchive = () => {
     setHiddenTokens([]);
     localStorage.removeItem("hidden_credentials");
   };
 
-  // Calculate filtered output loop list
+  // Calculate filtered output list (skips items manually dismissed by user)
   const visibleCredentials = credentials.filter(cred => !hiddenTokens.includes(cred.id));
 
   // State 1: Wallet Disconnected State (Glassmorphism Intercept Interface)
@@ -133,12 +133,12 @@ export default function HolderDashboard() {
           </p>
         </div>
         
-        {/* Secondary Clean Functional Controls */}
+        {/* Secondary Control Deck Elements */}
         <div className="flex items-center space-x-3">
           {hiddenTokens.length > 0 && (
             <button 
               onClick={handleResetArchive}
-              className="text-[10px] font-mono tracking-widest uppercase border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500 hover:text-black px-3 py-2 rounded-xl backdrop-blur-sm transition-all"
+              className="text-[10px] font-mono tracking-widest uppercase border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500 hover:text-black px-3 py-2 rounded-xl backdrop-blur-sm transition-all shadow-[0_0_15px_rgba(34,211,238,0.1)]"
             >
               Restore Dismissed ({hiddenTokens.length})
             </button>
@@ -176,16 +176,18 @@ export default function HolderDashboard() {
           {visibleCredentials.map((cred) => (
             <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 relative group">
               
-              {/* High-Tech X Close Dismiss Button Hook overlay */}
-              <button
-                onClick={() => handleDismissCredential(cred.id)}
-                className="absolute top-4 right-4 z-20 w-6 h-6 rounded-full bg-gray-900/80 border border-white/10 flex items-center justify-center text-[10px] font-mono text-gray-400 hover:text-red-400 hover:border-red-500/40 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md backdrop-blur-sm"
-                title="Dismiss Card from View"
-              >
-                ✕
-              </button>
+              {/* Conditional Cross Mark - Displays ONLY if asset is cryptographically revoked */}
+              {cred.revoked && (
+                <button
+                  onClick={() => handleDismissCredential(cred.id)}
+                  className="absolute top-4 right-4 z-20 w-6 h-6 rounded-full bg-gray-900/90 border border-red-500/30 flex items-center justify-center text-[10px] font-mono text-red-400 hover:text-red-200 hover:border-red-400 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-[0_0_10px_rgba(239,68,68,0.2)] backdrop-blur-sm"
+                  title="Dismiss Revoked Card from View"
+                >
+                  ✕
+                </button>
+              )}
 
-              {/* Asset Card Core Interface Module (Keeps internal Revoked status flags perfectly untouched) */}
+              {/* Asset Card Core Interface Module */}
               <CredentialCard credential={cred} />
 
             </div>
