@@ -22,6 +22,11 @@ export function WalletProvider({ children }) {
     }
   };
 
+  // UI Disconnection Module: Destroys active site session parameters
+  const disconnectWallet = () => {
+    setAccount("");
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined" && window.ethereum) {
       window.ethereum.request({ method: "eth_accounts" }).then((accounts) => {
@@ -35,7 +40,7 @@ export function WalletProvider({ children }) {
   }, []);
 
   return (
-    <WalletContext.Provider value={{ account, connectWallet }}>
+    <WalletContext.Provider value={{ account, connectWallet, disconnectWallet }}>
       {children}
     </WalletContext.Provider>
   );

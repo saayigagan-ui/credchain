@@ -7,7 +7,8 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "../../utils/contract";
 import CredentialCard from "../../components/CredentialCard";
 
 export default function HolderDashboard() {
-  const { account, connectWallet } = useWallet();
+  // Destructured complete wallet management capabilities from context core
+  const { account, connectWallet, disconnectWallet } = useWallet();
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -128,9 +129,18 @@ export default function HolderDashboard() {
           <h1 className="text-4xl font-black font-mono uppercase tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
             My Credentials
           </h1>
-          <p className="text-gray-400 text-xs font-mono mt-2 tracking-wider">
-            SECURE ACCESS CORE / <span className="text-cyan-400 select-all">{account}</span>
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+            <p className="text-gray-400 text-xs font-mono tracking-wider">
+              SECURE ACCESS CORE / <span className="text-cyan-400 select-all">{account}</span>
+            </p>
+            {/* Interactive Session Disconnect Hook */}
+            <button
+              onClick={disconnectWallet}
+              className="text-[10px] font-mono tracking-widest text-left text-red-500/60 hover:text-red-400 transition uppercase font-bold"
+            >
+              [ Disconnect Vault ]
+            </button>
+          </div>
         </div>
         
         {/* Secondary Control Deck Elements */}
