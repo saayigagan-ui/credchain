@@ -1,0 +1,17 @@
+# Secrets and Environment Variables
+.env
+.env.local
+.env.production
+.env.development.local
+
+# Blockchain / Hardhat Configuration Secrets
+secret.json
+secrets.json
+.private-key
+hardhat.config.js.secret
+
+# Dependencies and Builds
+node_modules/
+.next/
+out/
+build/
