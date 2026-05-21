@@ -11,6 +11,15 @@ export default function HolderDashboard() {
   const [credentials, setCredentials] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Initialize hidden tokens tracking from local browser memory array
+  const [hiddenTokens, setHiddenTokens] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("hidden_credentials");
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+
   useEffect(() => {
     if (account) {
       fetchMyCredentials();
@@ -66,6 +75,22 @@ export default function HolderDashboard() {
     setLoading(false);
   };
 
+  // Add token string identifier to hidden browser tracker matrix array
+  const handleHideCredential = (tokenId) => {
+    const updatedHidden = [...hiddenTokens, tokenId];
+    setHiddenTokens(updatedHidden);
+    localStorage.setItem("hidden_credentials", JSON.stringify(updatedHidden));
+  };
+
+  // Completely clear hidden filters and restore all certificates to layout frame
+  const handleResetFilters = () => {
+    setHiddenTokens([]);
+    localStorage.removeItem("hidden_credentials");
+  };
+
+  // Compute remaining items visible in grid loop framework
+  const visibleCredentials = credentials.filter(cred => !hiddenTokens.includes(cred.id));
+
   // State 1: Wallet Disconnected State (Glassmorphism Intercept Interface)
   if (!account) {
     return (
@@ -109,9 +134,19 @@ export default function HolderDashboard() {
           </p>
         </div>
         
-        {/* Secondary Clean Functional Node */}
-        <div className="text-xs font-mono text-gray-500 border border-white/5 bg-gray-950/20 px-4 py-2 rounded-xl backdrop-blur-sm">
-          Tokens Located: <span className="text-white font-bold">{credentials.length}</span>
+        {/* Secondary Clean Functional Node Deck */}
+        <div className="flex items-center space-x-3">
+          {hiddenTokens.length > 0 && (
+            <button 
+              onClick={handleResetFilters}
+              className="text-[10px] font-mono tracking-wider border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-500 hover:text-black px-3 py-2 rounded-xl backdrop-blur-sm transition-all"
+            >
+              RESTORE HIDDEN ({hiddenTokens.length})
+            </button>
+          )}
+          <div className="text-xs font-mono text-gray-500 border border-white/5 bg-gray-950/20 px-4 py-2 rounded-xl backdrop-blur-sm">
+            Active Assets: <span className="text-white font-bold">{visibleCredentials.length}</span>
+          </div>
         </div>
       </div>
 
@@ -124,7 +159,7 @@ export default function HolderDashboard() {
           </div>
           <span className="text-xs font-mono tracking-widest text-cyan-400 uppercase animate-pulse">Syncing Ledger Vault...</span>
         </div>
-      ) : credentials.length === 0 ? (
+      ) : visibleCredentials.length === 0 ? (
         
         // Empty Credentials Vault Template
         <div className="bg-gray-950/20 border border-white/5 rounded-3xl p-16 text-center backdrop-blur-md max-w-2xl mx-auto shadow-xl relative group">
@@ -132,16 +167,37 @@ export default function HolderDashboard() {
           <span className="text-5xl mb-4 block filter drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">🎓</span>
           <h3 className="text-lg font-bold font-mono tracking-wide uppercase text-gray-300 mb-2">No Records Registered</h3>
           <p className="text-sm text-gray-500 max-w-sm mx-auto font-sans leading-relaxed">
-            This verified wallet identifier currently contains zero active academic record assertions stamped onto the Sepolia testnet infrastructure.
+            This verified wallet identifier currently contains zero active or unfiltered academic record assertions stamped onto the Sepolia infrastructure.
           </p>
+          {hiddenTokens.length > 0 && (
+            <button
+              onClick={handleResetFilters}
+              className="mt-6 font-mono text-xs text-cyan-400 underline decoration-cyan-500/40 hover:text-cyan-300"
+            >
+              Reveal hidden local archive configurations
+            </button>
+          )}
         </div>
       ) : (
         
         // Active Assets Portfolio Grid Layout Frame
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {credentials.map((cred, index) => (
-            <div key={index} className="transition-all duration-300 hover:-translate-y-1">
+          {visibleCredentials.map((cred) => (
+            <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between group relative">
+              
+              {/* Asset Card Core Interface Module */}
               <CredentialCard credential={cred} />
+              
+              {/* Sleek Mask UI Action Trigger */}
+              <div className="mt-2 text-right opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => handleHideCredential(cred.id)}
+                  className="text-[10px] font-mono font-bold tracking-widest text-gray-600 hover:text-red-400 transition"
+                >
+                  [ HIDE FROM VAULT ]
+                </button>
+              </div>
+
             </div>
           ))}
         </div>
