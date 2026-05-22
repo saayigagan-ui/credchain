@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import AdminAnalytics from "../components/AdminAnalytics";
 
 // Sub-components loaded to create a seamless, single-page state flow
 import CyberHome from "../components/CyberHome";
@@ -104,7 +105,7 @@ export default function Home() {
   // Keep tracking element centered over the active view when mouse exits the bar entirely
   const handleNavContainerLeave = () => {
     const tracker = glintTrackerRef.current;
-    const activeBtn = containerRef.current?.querySelector(`[data-id="${view}"]`);
+    const activeBtn = navContainerRef.current?.querySelector(`[data-id="${view}"]`);
     
     if (!tracker) return;
 
@@ -239,7 +240,20 @@ export default function Home() {
         {view === "home" && <CyberHome onViewChange={setView} />}
         {view === "issue" && <div className="w-full max-w-4xl mx-auto animate-[fadeIn_0.4s_ease-out]"><IssuePortal initialTab="issue" /></div>}
         {view === "revoke" && <div className="w-full max-w-4xl mx-auto animate-[fadeIn_0.4s_ease-out]"><IssuePortal initialTab="revoke" /></div>}
-        {view === "admin" && <div className="w-full max-w-4xl mx-auto animate-[fadeIn_0.4s_ease-out]"><IssuePortal initialTab="admin" /></div>}
+        
+        {/* ENHANCED ADMIN PORTAL WITH ANALYTICS ENGINE */}
+        {view === "admin" && (
+          <div className="w-full max-w-7xl mx-auto animate-[fadeIn_0.4s_ease-out]">
+            <div className="mb-12 max-w-4xl mx-auto">
+              <IssuePortal initialTab="admin" />
+            </div>
+            <div className="border-t border-white/5 pt-12">
+              <h2 className="text-xl font-mono font-black uppercase tracking-wider text-white mb-6">System Health Workspace</h2>
+              <AdminAnalytics />
+            </div>
+          </div>
+        )}
+        
         {view === "dashboard" && <div className="w-full max-w-7xl mx-auto animate-[fadeIn_0.4s_ease-out]"><HolderDashboard /></div>}
         {view === "verify" && <div className="w-full max-w-4xl mx-auto animate-[fadeIn_0.4s_ease-out]"><VerifyPortal /></div>}
       </main>
