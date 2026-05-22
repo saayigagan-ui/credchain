@@ -4,12 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import dynamic from "next/dynamic";
 
-// BULLETPROOF IMPORT: Forces Next.js to grab the default export directly and skips server-side rendering
+// Standard syntax: Let Next.js handle the default resolution automatically
 const AdminAnalytics = dynamic(
-  () => import("../components/AdminAnalytics").then((mod) => mod.default),
+  () => import("../components/AdminAnalytics"), 
   { ssr: false }
 );
-
 // Sub-components loaded to create a seamless, single-page state flow
 import CyberHome from "../components/CyberHome";
 import IssuePortal from "./issue/page"; 
