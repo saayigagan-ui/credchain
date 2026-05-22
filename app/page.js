@@ -4,9 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import dynamic from "next/dynamic";
 
-const AdminAnalytics = dynamic(() => import("../components/AdminAnalytics"), {
-  ssr: false, // <-- This tells Next.js to safely render it only inside the user's browser
-});
+// BULLETPROOF IMPORT: Forces Next.js to grab the default export directly and skips server-side rendering
+const AdminAnalytics = dynamic(
+  () => import("../components/AdminAnalytics").then((mod) => mod.default),
+  { ssr: false }
+);
 
 // Sub-components loaded to create a seamless, single-page state flow
 import CyberHome from "../components/CyberHome";
@@ -82,7 +84,7 @@ export default function Home() {
       left: relativeLeft,
       width: targetRect.width,
       duration: 0.35,
-      ease: "back.out(1.2)", // Add a slight organic bounce effect when locking on
+      ease: "back.out(1.2)", 
       overwrite: "auto"
     });
 
