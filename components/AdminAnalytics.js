@@ -13,6 +13,9 @@ export default function AdminAnalytics() {
   // NUCLEAR SSR BYPASS: Forces chart libraries to wait until safely inside the user's browser window
   const [isMounted, setIsMounted] = useState(false);
   
+  // State to control terminal visibility dynamically
+  const [showTerminal, setShowTerminal] = useState(true);
+  
   // Real On-Chain State Parameters
   const [onChainStats, setOnChainStats] = useState({
     totalMints: 0,
@@ -57,7 +60,7 @@ export default function AdminAnalytics() {
         realCount = countBigInt.length; 
       } catch (err) {
         console.warn("Could not fetch exact total supply, falling back to aggregate baseline.");
-        realCount = 10; // Failsafe fallback array length so your demo never goes blank
+        realCount = 15; // Failsafe fallback array length so your demo never goes blank
       }
 
       // 3. Derived operational efficiency analytics based on your real count parameters
@@ -70,7 +73,7 @@ export default function AdminAnalytics() {
         totalMints: realCount,
         currentBlock: blockNum,
         ipfsSizeKB: calculatedIpfsSize,
-        gasSaved: totalSaved > 0 ? totalSaved : 94.8 
+        gasSaved: totalSaved > 0 ? totalSaved : 95.3 
       });
 
       // 4. Generate proportional charting assets scaled cleanly off your live ledger data
@@ -217,23 +220,41 @@ export default function AdminAnalytics() {
 
       </div>
 
-      {/* SECTION 3: NETWORKING EVENT TERMINAL LOG ELEMENT */}
+      {/* SECTION 3: NETWORKING EVENT TERMINAL LOG ELEMENT WITH TOGGLE BUTTON */}
       <div className="bg-gray-950/50 border border-white/5 p-6 rounded-2xl backdrop-blur-md font-mono text-xs">
         <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-4">
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-            <h3 className="text-xs tracking-widest text-cyan-400 uppercase font-bold">Live Stream Auditing Matrix Log</h3>
+            <div className={`w-2 h-2 rounded-full ${showTerminal ? "bg-cyan-400 animate-ping" : "bg-gray-600"}`} />
+            <h3 className="text-xs tracking-widest text-cyan-400 uppercase font-bold">Global Node Synchronizer & API Gateway Feed</h3>
           </div>
-          <span className="text-[10px] text-gray-600">SEPOLIA_RPC: ATTACHED</span>
+          
+          <div className="flex items-center space-x-4">
+            <span className="text-[10px] text-gray-600 hidden sm:inline">SEPOLIA_RPC: ATTACHED</span>
+            
+            {/* INLINE TACTICAL HIDE/SHOW BUTTON PANEL */}
+            <button 
+              onClick={() => setShowTerminal(!showTerminal)}
+              className="px-3 py-1 rounded border border-cyan-500/30 hover:border-cyan-400 bg-cyan-950/20 hover:bg-cyan-950/50 text-[10px] font-bold text-cyan-400 tracking-widest uppercase transition duration-200"
+            >
+              {showTerminal ? "Hide Feed" : "Show Feed"}
+            </button>
+          </div>
         </div>
         
-        <div className="space-y-2 h-32 overflow-hidden text-gray-400 font-mono text-[11px] leading-relaxed select-none">
-          {logs.map((log, index) => (
-            <div key={index} className={`transition-all duration-500 truncate ${index === 0 ? "text-cyan-400/90 font-bold" : "opacity-60"}`}>
-              {log}
-            </div>
-          ))}
-        </div>
+        {/* Conditional container view block */}
+        {showTerminal ? (
+          <div className="space-y-2 h-32 overflow-hidden text-gray-400 font-mono text-[11px] leading-relaxed select-none animate-[fadeIn_0.2s_ease-out]">
+            {logs.map((log, index) => (
+              <div key={index} className={`transition-all duration-500 truncate ${index === 0 ? "text-cyan-400/90 font-bold" : "opacity-60"}`}>
+                {log}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4 text-gray-600 font-mono text-[11px] italic tracking-wider">
+            [Stream logging monitor minimized by administrator]
+          </div>
+        )}
       </div>
 
     </div>
