@@ -4,11 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import dynamic from "next/dynamic";
 
-// Standard syntax: Let Next.js handle the default resolution automatically
+// Next.js client-side dynamic boundary: Skips server pre-rendering to accommodate canvas/SVG paths natively
 const AdminAnalytics = dynamic(
-  () => import("../components/AdminAnalytics"), 
+  () => import("../components/AdminAnalytics").then((mod) => mod.default),
   { ssr: false }
 );
+
 // Sub-components loaded to create a seamless, single-page state flow
 import CyberHome from "../components/CyberHome";
 import IssuePortal from "./issue/page"; 
