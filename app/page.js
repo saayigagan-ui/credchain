@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import AdminAnalytics from "../components/AdminAnalytics";
+import dynamic from "next/dynamic";
+
+const AdminAnalytics = dynamic(() => import("../components/AdminAnalytics"), {
+  ssr: false, // <-- This tells Next.js to safely render it only inside the user's browser
+});
 
 // Sub-components loaded to create a seamless, single-page state flow
 import CyberHome from "../components/CyberHome";
