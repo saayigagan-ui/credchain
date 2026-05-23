@@ -41,7 +41,7 @@ contract CredChain is ERC721, Ownable {
         bool valid
     );
 
-   constructor() ERC721("CredChain", "CRED") {}
+    constructor() ERC721("CredChain", "CRED") {}
 
     function approveIssuer(address issuer, string memory name) external onlyOwner {
         approvedIssuers[issuer] = true;
@@ -117,5 +117,19 @@ contract CredChain is ERC721, Ownable {
 
     function totalCredentials() external view returns (uint256) {
         return _tokenIds.current();
+    }
+
+    // --- NEW: BULK VERIFICATION FOR HR ---
+    function verifyBulk(uint256[] calldata ids) external view returns (bool[] memory) {
+        bool[] memory results = new bool[](ids.length);
+        for(uint i = 0; i < ids.length; i++) {
+            uint256 id = ids[i];
+            if (credentials[id].issuedAt != 0 && !credentials[id].revoked) {
+                results[i] = true;
+            } else {
+                results[i] = false;
+            }
+        }
+        return results;
     }
 }

@@ -92,6 +92,40 @@ export default function HolderDashboard() {
   // Calculate filtered output list (skips items manually dismissed by user)
   const visibleCredentials = credentials.filter(cred => !hiddenTokens.includes(cred.id));
 
+  // --- NEW: ADVANCED REPUTATION SCORE CALCULATOR (Anti-Spam Capped) ---
+  const calculateReputation = () => {
+    let score = 0;
+    let basicCertsCount = 0; // Track low-tier spam
+
+    visibleCredentials.forEach(cred => {
+      if (!cred.revoked) {
+        const type = (cred.degree || "").toLowerCase();
+        if (type.includes("degree") || type.includes("bachelor") || type.includes("master")) {
+          score += 100;
+        } else if (type.includes("certification") || type.includes("diploma")) {
+          score += 50;
+        } else if (type.includes("bootcamp") || type.includes("course")) {
+          score += 25;
+        } else {
+          // CAP: Only count the first 5 basic certificates (Max 50 points)
+          if (basicCertsCount < 5) {
+            score += 10;
+            basicCertsCount++;
+          }
+        }
+      }
+    });
+    return score;
+  };
+
+  const repScore = calculateReputation();
+  let tier = "Unranked";
+  let tierColor = "text-gray-500";
+  if (repScore > 0) { tier = "Novice Node"; tierColor = "text-cyan-600"; }
+  if (repScore >= 100) { tier = "Verified Explorer"; tierColor = "text-indigo-400"; }
+  if (repScore >= 250) { tier = "Elite Scholar"; tierColor = "text-purple-400"; }
+  if (repScore >= 500) { tier = "Master Genesis"; tierColor = "text-yellow-400"; }
+
   // State 1: Wallet Disconnected State (Glassmorphism Intercept Interface)
   if (!account) {
     return (
@@ -180,28 +214,54 @@ export default function HolderDashboard() {
           </p>
         </div>
       ) : (
-        
-        // Active Assets Portfolio Grid Layout Frame
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleCredentials.map((cred) => (
-            <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 relative group">
-              
-              {/* Conditional Cross Mark - Displays ONLY if asset is cryptographically revoked */}
-              {cred.revoked && (
-                <button
-                  onClick={() => handleDismissCredential(cred.id)}
-                  className="absolute top-4 right-4 z-20 w-6 h-6 rounded-full bg-gray-900/90 border border-red-500/30 flex items-center justify-center text-[10px] font-mono text-red-400 hover:text-red-200 hover:border-red-400 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-[0_0_10px_rgba(239,68,68,0.2)] backdrop-blur-sm"
-                  title="Dismiss Revoked Card from View"
-                >
-                  ✕
-                </button>
-              )}
+        <div className="w-full">
 
-              {/* Asset Card Core Interface Module */}
-              <CredentialCard credential={cred} />
-
+          {/* --- NEW: REPUTATION SCORE BANNER --- */}
+          <div className="mb-10 w-full bg-gradient-to-r from-gray-950 to-black border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between shadow-[0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+            <div className="absolute inset-0 border border-white/5 rounded-3xl group-hover:border-white/10 transition duration-500 pointer-events-none" />
+            <div className="flex items-center space-x-6 mb-4 md:mb-0 relative z-10">
+              <div className={`w-16 h-16 rounded-2xl border border-white/10 bg-gray-900/50 flex items-center justify-center text-3xl shadow-[0_0_15px_currentColor] ${tierColor}`}>
+                🛡️
+              </div>
+              <div>
+                <h2 className="text-xl font-black font-mono uppercase tracking-widest text-white">Trust Reputation</h2>
+                <p className="text-xs text-gray-400 font-sans mt-1">Calculated from {visibleCredentials.filter(c => !c.revoked).length} active on-chain assets</p>
+              </div>
             </div>
-          ))}
+            
+            <div className="text-center md:text-right relative z-10">
+              <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-mono tracking-tighter">
+                {repScore}
+              </div>
+              <div className={`text-[10px] font-bold uppercase tracking-[0.2em] mt-2 ${tierColor}`}>
+                Tier: {tier}
+              </div>
+            </div>
+          </div>
+
+          {/* Active Assets Portfolio Grid Layout Frame */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleCredentials.map((cred) => (
+              <div key={cred.id} className="transition-all duration-300 hover:-translate-y-1 relative group">
+                
+                {/* Conditional Cross Mark - Displays ONLY if asset is cryptographically revoked */}
+                {cred.revoked && (
+                  <button
+                    onClick={() => handleDismissCredential(cred.id)}
+                    className="absolute top-4 right-4 z-20 w-6 h-6 rounded-full bg-gray-900/90 border border-red-500/30 flex items-center justify-center text-[10px] font-mono text-red-400 hover:text-red-200 hover:border-red-400 opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-[0_0_10px_rgba(239,68,68,0.2)] backdrop-blur-sm"
+                    title="Dismiss Revoked Card from View"
+                  >
+                    ✕
+                  </button>
+                )}
+
+                {/* Asset Card Core Interface Module */}
+                <CredentialCard credential={cred} />
+
+              </div>
+            ))}
+          </div>
+
         </div>
       )}
     </div>

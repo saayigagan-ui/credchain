@@ -1,19 +1,26 @@
-export const CONTRACT_ADDRESS = "0x938380A15F25eB4ce01Bb6875DD5115A6A09bAA1";
+// frontend/utils/contract.js
 
-// The human-readable ABI for the exact functions we will call in the app
+// Paste your fresh Sepolia address here
+export const CONTRACT_ADDRESS = "0x8a00EAe3C17FfC66b3092106814ef8059CDF6924";
+
 export const CONTRACT_ABI = [
-  // --- NEW FUNCTIONS ADDED HERE ---
-  "function approveIssuer(address issuer, string name)",
+  "function approveIssuer(address issuer, string memory name) external",
+  "function revokeIssuer(address issuer) external",
+  "function issueCredential(address recipient, string memory ipfsHash, string memory credentialType, bytes32 credentialHash) external returns (uint256)",
+  "function revokeCredential(uint256 tokenId) external",
+  "function verifyCredential(uint256 tokenId) external returns (bool)",
   
-  // --- EXISTING FUNCTIONS ---
-  "function approvedIssuers(address) view returns (bool)",
-  "function issuerNames(address) view returns (string)",
-  "function getHolderCredentials(address holder) view returns (uint256[])",
-  "function getCredential(uint256 tokenId) view returns (tuple(uint256 tokenId, address issuer, address recipient, string ipfsHash, bytes32 credentialHash, uint256 issuedAt, bool revoked, string credentialType))",
-  "function issueCredential(address recipient, string ipfsHash, string credentialType, bytes32 credentialHash) returns (uint256)",
-  "function revokeCredential(uint256 tokenId)",
-  "function verifyCredential(uint256 tokenId) returns (bool)",
-  "function tokenURI(uint256 tokenId) view returns (string)",
-  "function totalCredentials() view returns (uint256)"
+  // NEW BULK FUNCTION (Required for your new feature)
+  "function verifyBulk(uint256[] calldata ids) external view returns (bool[] memory)",
+  
+  "function getHolderCredentials(address holder) external view returns (uint256[] memory)",
+  "function getCredential(uint256 tokenId) external view returns (tuple(uint256 tokenId, address issuer, address recipient, string ipfsHash, bytes32 credentialHash, uint256 issuedAt, bool revoked, string credentialType))",
+  "function totalCredentials() external view returns (uint256)",
+  "function tokenURI(uint256 tokenId) public view returns (string memory)",
+  "function owner() public view returns (address)",
+  "function issuerNames(address) public view returns (string)",
+  "event IssuerApproved(address indexed issuer, string name)",
+  "event CredentialIssued(uint256 indexed tokenId, address indexed issuer, address indexed recipient, string credentialType)",
+  "event CredentialRevoked(uint256 indexed tokenId, address indexed issuer)",
+  "event CredentialVerified(uint256 indexed tokenId, address indexed verifier, bool valid)"
 ];
-//0x0B1d4EeB51D6F6F9fc43962AA7d676c7701FF005
