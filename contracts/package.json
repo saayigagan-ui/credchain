@@ -1,0 +1,20 @@
+{
+  "name": "credchain-contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "@openzeppelin/contracts": "^4.9.3",
+    "hardhat": "^2.22.15"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}
