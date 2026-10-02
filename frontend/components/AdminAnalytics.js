@@ -10,7 +10,10 @@ export default function AdminAnalytics() {
   const { account } = useWallet();
   const [loading, setLoading] = useState(true);
   
-  // NUCLEAR SSR BYPASS: Forces chart libraries to wait until safely inside the user's browser window
+  // SECURITY STATE
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // NUCLEAR SSR BYPASS
   const [isMounted, setIsMounted] = useState(false);
   
   // State to control terminal visibility dynamically
@@ -33,7 +36,6 @@ export default function AdminAnalytics() {
     "[SYSTEM_INIT] - Establishing secure RPC connection to Sepolia Testnet...",
   ]);
 
-  // Set mounted flag to true immediately after the browser mounts the component tree
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -46,24 +48,40 @@ export default function AdminAnalytics() {
 
   const fetchRealBlockchainData = async () => {
     try {
-      if (!window.ethereum) throw new Error("No crypto wallet found");
+      if (!account || !window.ethereum) {
+        setLoading(false);
+        setIsAdmin(false);
+        return;
+      }
+      
       const provider = new ethers.BrowserProvider(window.ethereum);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
 
-      // 1. Fetch current block number to prove the network layer is alive and syncing
+      // SECURITY PROTOCOL: Check if caller is the Super Admin before fetching data
+      const ownerAddress = await contract.owner();
+      if (account.toLowerCase() !== ownerAddress.toLowerCase()) {
+        setIsAdmin(false);
+        setLoading(false);
+        return; // Abort data fetching
+      }
+      
+      // If we pass the check, set admin to true and proceed
+      setIsAdmin(true);
+
+      // 1. Fetch current block number
       const blockNum = await provider.getBlockNumber();
 
-      // 2. Fetch total credential metrics straight from your live contract mapping
+      // 2. Fetch total credential metrics
       let realCount = 0;
       try {
         const countBigInt = await contract.getHolderCredentials(account); 
         realCount = countBigInt.length; 
       } catch (err) {
         console.warn("Could not fetch exact total supply, falling back to aggregate baseline.");
-        realCount = 15; // Failsafe fallback array length so your demo never goes blank
+        realCount = 15; 
       }
 
-      // 3. Derived operational efficiency analytics based on your real count parameters
+      // 3. Derived operational efficiency analytics
       const calculatedIpfsSize = (realCount * 0.35).toFixed(1); 
       const standardGasCost = realCount * 85; 
       const optimizedGasCost = realCount * 4;
@@ -76,7 +94,7 @@ export default function AdminAnalytics() {
         gasSaved: totalSaved > 0 ? totalSaved : 95.3 
       });
 
-      // 4. Generate proportional charting assets scaled cleanly off your live ledger data
+      // 4. Generate proportional charting assets
       const baseVerifications = realCount * 4; 
       setDynamicTraffic([
         { name: "10:00", Verifications: Math.floor(baseVerifications * 0.1), Mints: Math.max(1, Math.floor(realCount * 0.1)) },
@@ -102,7 +120,7 @@ export default function AdminAnalytics() {
 
   // Automated network audit logging simulation feed
   useEffect(() => {
-    if (loading || !isMounted) return;
+    if (loading || !isMounted || !isAdmin) return;
     const actions = [
       "INCOMING VERIFICATION FOR TOKEN_ID #",
       "METADATA RESOLVED OVER PINATA GATEWAY #",
@@ -119,19 +137,35 @@ export default function AdminAnalytics() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [loading, onChainStats, isMounted]);
+  }, [loading, onChainStats, isMounted, isAdmin]);
 
-  // HARD SSR BOUNDARY BLOCK: If rendered on Vercel's server node, pass null safely
+  // HARD SSR BOUNDARY BLOCK
   if (!isMounted) return null;
 
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-16 bg-gray-950/20 rounded-2xl border border-white/5 font-mono text-xs text-cyan-400 animate-pulse">
-        [CONNECTING NODE RPC] - Querying Sepolia live ledger state graphs...
+        [CONNECTING NODE RPC] - Verifying Administrator Signatures...
       </div>
     );
   }
 
+  // SECURITY RENDER BLOCK: Kick out non-admins
+  if (!isAdmin) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center py-20 bg-gray-950/50 rounded-2xl border border-red-500/20 backdrop-blur-md">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+          <span className="text-3xl">🛡️</span>
+        </div>
+        <h2 className="text-2xl font-black font-mono text-red-500 tracking-widest mb-2">ACCESS DENIED</h2>
+        <p className="text-gray-400 font-mono text-sm max-w-md text-center">
+          Terminal locked. Connection terminated. Only the verified Super Admin node can access network telemetry.
+        </p>
+      </div>
+    );
+  }
+
+  // SUCCESS RENDER BLOCK: The original dashboard
   return (
     <div className="w-full space-y-8 animate-[fadeIn_0.4s_ease-out]">
       

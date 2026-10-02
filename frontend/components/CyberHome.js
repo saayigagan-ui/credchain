@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
-export default function CyberHome({ onViewChange }) {
+export default function CyberHome({ onViewChange, isIssuer, isAdmin }) {
   const heroRef = useRef(null);
   const cardGridRef = useRef(null);
 
@@ -31,7 +31,7 @@ export default function CyberHome({ onViewChange }) {
         ease: "sine.inOut"
       });
     });
-  }, []);
+  }, [isIssuer]); // Re-run animation if authorization state changes
 
   // 3D Perspective Tilt calculations mapping cursor position
   const handleMouseMove = (e, card) => {
@@ -86,14 +86,16 @@ export default function CyberHome({ onViewChange }) {
         </p>
 
         <div className="pt-4 flex flex-wrap justify-center gap-4">
-          <button 
-            onClick={() => onViewChange("issue")}
-            className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 font-mono text-xs font-black tracking-widest uppercase transition-all duration-300 shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95"
-          >
-            Launch Mint Core
-          </button>
+          {/* ONLY VISIBLE TO AUTHORIZED ISSUERS */}
+          {isIssuer && (
+            <button 
+              onClick={() => onViewChange("issue")}
+              className="px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 font-mono text-xs font-black tracking-widest uppercase transition-all duration-300 shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95"
+            >
+              Launch Mint Core
+            </button>
+          )}
           
-          {/* UPDATED: Text changed to "Check Credential" */}
           <button 
             onClick={() => onViewChange("verify")}
             className="px-8 py-4 rounded-xl bg-gray-900 border border-white/10 hover:border-purple-500/40 font-mono text-xs font-black tracking-widest uppercase transition-all duration-300 hover:bg-gray-800"
@@ -103,32 +105,34 @@ export default function CyberHome({ onViewChange }) {
         </div>
       </div>
 
-      {/* Feature Navigation Cards Deck */}
+      {/* Feature Navigation Cards Deck - Switched to centered flex wrap for dynamic centering */}
       <div 
         ref={cardGridRef}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto pt-10"
+        className="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto pt-10"
       >
-        {/* Card 1 */}
-        <div 
-          onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
-          onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
-          onClick={() => onViewChange("issue")}
-          className="bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-cyan-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)]"
-        >
-          <div>
-            <div className="w-12 h-12 bg-cyan-950/30 border border-cyan-500/30 rounded-xl flex items-center justify-center text-cyan-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">01</div>
-            <h3 className="text-xl font-bold font-mono tracking-wide text-white uppercase group-hover:text-cyan-400 transition">Mint Portal</h3>
-            <p className="text-sm text-gray-400 mt-2 font-sans">Authorized institutions can permanently anchor verified academic student tokens straight onto the public ledger.</p>
+        {/* Card 1: Mint Portal (ONLY VISIBLE TO ISSUERS) */}
+        {isIssuer && (
+          <div 
+            onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
+            onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
+            onClick={() => onViewChange("issue")}
+            className="w-full md:w-[350px] bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-cyan-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)]"
+          >
+            <div>
+              <div className="w-12 h-12 bg-cyan-950/30 border border-cyan-500/30 rounded-xl flex items-center justify-center text-cyan-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">01</div>
+              <h3 className="text-xl font-bold font-mono tracking-wide text-white uppercase group-hover:text-cyan-400 transition">Mint Portal</h3>
+              <p className="text-sm text-gray-400 mt-2 font-sans">Authorized institutions can permanently anchor verified academic student tokens straight onto the public ledger.</p>
+            </div>
+            <span className="text-xs font-mono font-bold text-cyan-500 tracking-widest uppercase mt-4 block group-hover:translate-x-2 transition-transform">Initialize Process →</span>
           </div>
-          <span className="text-xs font-mono font-bold text-cyan-500 tracking-widest uppercase mt-4 block group-hover:translate-x-2 transition-transform">Initialize Process →</span>
-        </div>
+        )}
 
-        {/* Card 2 */}
+        {/* Card 2: Secure Vault (ALWAYS VISIBLE) */}
         <div 
           onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
           onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
           onClick={() => onViewChange("dashboard")}
-          className="bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-purple-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
+          className="w-full md:w-[350px] bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-purple-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
         >
           <div>
             <div className="w-12 h-12 bg-purple-950/30 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">02</div>
@@ -138,20 +142,22 @@ export default function CyberHome({ onViewChange }) {
           <span className="text-xs font-mono font-bold text-purple-500 tracking-widest uppercase mt-4 block group-hover:translate-x-2 transition-transform">Open Archive →</span>
         </div>
 
-        {/* Card 3 */}
-        <div 
-          onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
-          onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
-          onClick={() => onViewChange("revoke")}
-          className="bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-red-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(239,68,68,0.1)]"
-        >
-          <div>
-            <div className="w-12 h-12 bg-red-950/30 border border-red-500/30 rounded-xl flex items-center justify-center text-red-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">03</div>
-            <h3 className="text-xl font-bold font-mono tracking-wide text-white uppercase group-hover:text-red-400 transition">Revocation Core</h3>
-            <p className="text-sm text-gray-400 mt-2 font-sans">Administrative control unit to invalidate identifiers and safely declare contract ledger compliance anomalies.</p>
+        {/* Card 3: Revocation Core (ONLY VISIBLE TO ISSUERS) */}
+        {isIssuer && (
+          <div 
+            onMouseMove={(e) => handleMouseMove(e, e.currentTarget)}
+            onMouseLeave={(e) => handleMouseLeave(e.currentTarget)}
+            onClick={() => onViewChange("revoke")}
+            className="w-full md:w-[350px] bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-red-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+          >
+            <div>
+              <div className="w-12 h-12 bg-red-950/30 border border-red-500/30 rounded-xl flex items-center justify-center text-red-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">03</div>
+              <h3 className="text-xl font-bold font-mono tracking-wide text-white uppercase group-hover:text-red-400 transition">Revocation Core</h3>
+              <p className="text-sm text-gray-400 mt-2 font-sans">Administrative control unit to invalidate identifiers and safely declare contract ledger compliance anomalies.</p>
+            </div>
+            <span className="text-xs font-mono font-bold text-red-500 tracking-widest uppercase mt-4 block group-hover:translate-x-2 transition-transform">Access Terminal →</span>
           </div>
-          <span className="text-xs font-mono font-bold text-red-500 tracking-widest uppercase mt-4 block group-hover:translate-x-2 transition-transform">Access Terminal →</span>
-        </div>
+        )}
       </div>
 
     </div>
