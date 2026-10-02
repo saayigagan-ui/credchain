@@ -135,7 +135,9 @@ export default function CyberHome({ onViewChange, isIssuer, isAdmin }) {
           className="w-full md:w-[350px] bg-gray-950/40 border border-white/5 p-8 rounded-2xl backdrop-blur-md cursor-pointer hover:border-purple-500/40 shadow-xl transition-all duration-300 group flex flex-col justify-between h-64 hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
         >
           <div>
-            <div className="w-12 h-12 bg-purple-950/30 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">02</div>
+            <div className="w-12 h-12 bg-purple-950/30 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 mb-6 font-mono font-bold group-hover:scale-110 transition duration-300">
+              {isIssuer ? "02" : "01"}
+            </div>
             <h3 className="text-xl font-bold font-mono tracking-wide text-white uppercase group-hover:text-purple-400 transition">Secure Vault</h3>
             <p className="text-sm text-gray-400 mt-2 font-sans">Students can view acquired achievements, track IPFS verification hashes, and print dynamic vectorized PDF certificates.</p>
           </div>
